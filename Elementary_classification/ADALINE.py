@@ -179,7 +179,7 @@ if __name__ == "__main__":
     print(df.tail())
     
     # ADALINEモデルを学習
-    model = ADALINE(X, y, alpha=0.0005, n_iters=1000)
+    model = ADALINE(X, y, alpha=0.01, n_iters=1000)
     acc = model.fit(get_accuracy=True)
     print(f"Accuracy: {acc}")
     
