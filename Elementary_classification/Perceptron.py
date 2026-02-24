@@ -35,10 +35,10 @@ class Perceptron:
         for _ in range(self.n_iters_):  # 行列全体の計算をn_iters回繰り返す
             
             y_pred = self.predict(self.X_)                          # 入力データのを用いて、入力行ごとのクラスラベル(列)を予測する
-            result = self.y_ - y_pred                               # 予測値と正解値の差を求める(正しい予測の場合は0、誤った予測の場合は非0)
+            error = self.y_ - y_pred                               # 予測値と正解値の差を求める(正しい予測の場合は0、誤った予測の場合は非0)
             
-            delta_weights = self.alpha_ * np.dot(result, self.X_)   # 予測値と入力データの積の和を学習率で調整した値を、重みの更新量とする
-            delta_bias    = self.alpha_ * sum(result)               # 予測値と正解値の差の和を学習率で調整した値を、バイアスの更新量とする
+            delta_weights = self.alpha_ * np.dot(error.T, self.X_)   # 予測値と入力データの積の和を学習率で調整した値を、重みの更新量とする
+            delta_bias    = self.alpha_ * sum(error)               # 予測値と正解値の差の和を学習率で調整した値を、バイアスの更新量とする
                         
             self.weights_ += delta_weights                          # 重みを更新する
             self.bias_    += delta_bias                             # バイアスを更新する
@@ -51,7 +51,7 @@ class Perceptron:
         """
             
         z = self.net_input(X)
-        y_pred = self.decision(z) 
+        y_pred = self.threshold(z) 
         return y_pred
     
     def net_input(self, X):
@@ -59,8 +59,8 @@ class Perceptron:
         """
         return np.dot(X, self.weights_) + self.bias_
     
-    def decision(self, z):
-        """決定関数<br>
+    def threshold(self, z):
+        """閾値関数<br>
         与えられた総入力zを基に、0か1を返す
         """
         #return 1 if z >= 0 else 0      # accuracy実行時に行列が全て代入されるため、その場合はzは1次元の配列になり、このコードでは対応できない.

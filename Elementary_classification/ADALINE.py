@@ -51,7 +51,7 @@ class ADALINE:
             
         z = self.net_input(X)
         activated_z = self.activation(z)
-        y_pred = self.decision(activated_z)
+        y_pred = self.threshold(activated_z)
         
         return y_pred
     
@@ -60,7 +60,7 @@ class ADALINE:
         """
         return np.dot(X, self.weights_) + self.bias_
     
-    def decision(self, z):
+    def threshold(self, z):
         """決定関数<br>
         与えられた総入力zを基に、0か1を返す
         """
@@ -79,8 +79,9 @@ class ADALINE:
         損失関数の偏微分値を返す
         数式上は重みベクトルとバイアスを代入するが、このプログラムでは総入力を入れる
         """
-        nabla_wL = -(2 / len(self.y_)) * np.dot(self.y_ - self.activation(z), self.X_)
-        nabla_bL = -(2 / len(self.y_)) * sum(self.y_ - self.activation(z))
+        error = self.y_ - self.activation(z)                    # i行1列
+        nabla_wL = -(2 / len(self.y_)) * np.dot(error.T, self.X_) # 1行i列 × i行j列 = 1行j列
+        nabla_bL = -(2 / len(self.y_)) * sum(error)
         
         return nabla_wL, nabla_bL
         
