@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 
-class Perceptron:
+class ADALINE:
     """
     # パラメータ
     **X**       :入力データ<br>
@@ -21,7 +21,7 @@ class Perceptron:
         
     def fit(self, get_accuracy=False):
         """
-        パーセプトロンモデルを入力データに適合させる
+        ADALINEモデルを入力データに適合させる
         """
         row, col = self.X_.shape        # row:(データ数=サンプル数)、col:列数(特徴量の数=次元数)
         
@@ -34,24 +34,25 @@ class Perceptron:
         # 重みとバイアスを求める
         for _ in range(self.n_iters_):  # 行列全体の計算をn_iters回繰り返す
             
-            y_pred = self.predict(self.X_)                          # 入力データのを用いて、入力行ごとのクラスラベル(列)を予測する
-            error = self.y_ - y_pred                               # 予測値と正解値の差を求める(正しい予測の場合は0、誤った予測の場合は非0)
+            z = self.net_input(self.X_)                                     # 総入力を計算しておく
+            nabla_wL, nabla_bL = self.nabla_objective(z)  # 目的関数(損失関数)の偏微分値を計算
             
-            delta_weights = self.alpha_ * np.dot(error.T, self.X_)   # 予測値と入力データの積の和を学習率で調整した値を、重みの更新量とする
-            delta_bias    = self.alpha_ * sum(error)               # 予測値と正解値の差の和を学習率で調整した値を、バイアスの更新量とする
-                        
-            self.weights_ += delta_weights                          # 重みを更新する
-            self.bias_    += delta_bias                             # バイアスを更新する
+            delta_weights = - self.alpha_ * nabla_wL                        # 重みの更新量
+            delta_bias    = - self.alpha_ * nabla_bL                        # バイアスの更新量
+            self.weights_ += delta_weights                                  # 重みを更新する
+            self.bias_    += delta_bias                                     # バイアスを更新する
                         
         if get_accuracy:
             return self.accuracy(self.y_, self.predict(self.X_))
         
     def predict(self, X):
-        """総入力zを基に、決定関数を用いてクラスラベル(0か1)を予測する
+        """総入力zを活性化関数に通して、決定関数を用いてクラスラベル(0か1)を予測する
         """
             
         z = self.net_input(X)
-        y_pred = self.threshold(z) 
+        activated_z = self.activation(z)
+        y_pred = self.threshold(activated_z)
+        
         return y_pred
     
     def net_input(self, X):
@@ -60,11 +61,30 @@ class Perceptron:
         return np.dot(X, self.weights_) + self.bias_
     
     def threshold(self, z):
-        """閾値関数<br>
+        """決定関数<br>
         与えられた総入力zを基に、0か1を返す
         """
         #return 1 if z >= 0 else 0      # accuracy実行時に行列が全て代入されるため、その場合はzは1次元の配列になり、このコードでは対応できない.
-        return np.where(z >= 0, 1, 0)   # 行列にも対応したコード
+        return np.where(z >= 0.5, 1, 0)   # 行列にも対応したコード
+    
+    def activation(self, z):
+        """活性化関数<br>
+        与えられた総入力zを基に、値を返す
+        """
+        return z
+    
+    def nabla_objective(self, z):
+        """目的関数の偏微分<br>
+        ADALINEの目的関数は損失関数<br>
+        損失関数の偏微分値を返す
+        数式上は重みベクトルとバイアスを代入するが、このプログラムでは総入力を入れる
+        """
+        error = self.y_ - self.activation(z)                    # i行1列
+        nabla_wL = -(2 / len(self.y_)) * np.dot(error.T, self.X_) # 1行i列 × i行j列 = 1行j列
+        nabla_bL = -(2 / len(self.y_)) * sum(error)
+        
+        return nabla_wL, nabla_bL
+        
     
     def accuracy(self, y_true, y_pred):
         """正解率を計算する
@@ -122,15 +142,15 @@ class Perceptron:
         cls1_collect = self.X_[np.logical_and(self.predict(self.X_) == 1, self.y_ == 1)]
         cls1_error   = self.X_[np.logical_and(self.predict(self.X_) == 1, self.y_ == 0)]
         cls0_error   = self.X_[np.logical_and(self.predict(self.X_) == 0, self.y_ == 1)]
-        plt.scatter(cls0_collect[:, 0], cls0_collect[:, 1], c='blue', edgecolors='k', marker='o', label='Class 0 (Predicted True)')
-        plt.scatter(cls1_collect[:, 0], cls1_collect[:, 1], c='red' , edgecolors='k', marker='s', label='Class 1 (Predicted True)')
-        plt.scatter(cls1_error[:, 0]  , cls1_error[:, 1]  , c='cyan' , edgecolors='k', marker='o', label='Class 0 (Predicted False)')
-        plt.scatter(cls0_error[:, 0]  , cls0_error[:, 1]  , c='orange', edgecolors='k', marker='s', label='Class 1 (Predicted False)')
+        plt.scatter(cls0_collect[:, 0], cls0_collect[:, 1], c='blue', edgecolors='k', marker='o', label='Class 0 (予測成功)')
+        plt.scatter(cls1_collect[:, 0], cls1_collect[:, 1], c='red' , edgecolors='k', marker='s', label='Class 1 (予測成功)')
+        plt.scatter(cls1_error[:, 0]  , cls1_error[:, 1]  , c='cyan' , edgecolors='k', marker='o', label='Class 0 (予測失敗)')
+        plt.scatter(cls0_error[:, 0]  , cls0_error[:, 1]  , c='orange', edgecolors='k', marker='s', label='Class 1 (予測失敗)')
                 
         # 軸ラベル、タイトル、凡例の設定
         plt.xlabel(xlabel='sepal length (cm)', fontdict={'family':'MS Gothic'})
         plt.ylabel(ylabel='petal length (cm)', fontdict={'family':'MS Gothic'})
-        plt.title(label='パーセプトロンの決定領域と予測結果' , fontdict={'family':'MS Gothic'})
+        plt.title(label='ADALINEの決定領域と予測結果' , fontdict={'family':'MS Gothic'})
         plt.legend(prop={'family':'MS Gothic', 'size':7}, loc='lower right', )
         
         plt.show()
@@ -149,7 +169,7 @@ if __name__ == "__main__":
     print(df.head())
     print(df.tail())
     
-    # パーセプトロンモデルを適用できるようにするために、データの構造を変更する
+    # ADALINEモデルを適用できるようにするために、データの構造を変更する
     X = X[:100, [0, 2]]    # 入力データXを、sepalとpetalの長さとする(targetは3つあり、1つあたり50行ずつあるため、150行のうち前100行のみを選択)
     y = y[:100]            # 正解データyを、setosaとversicolorの2クラスにする(0と1の2値分類)
     
@@ -159,8 +179,8 @@ if __name__ == "__main__":
     print(df.head())
     print(df.tail())
     
-    # パーセプトロンモデルを学習
-    model = Perceptron(X, y, alpha=0.01, n_iters=1000)
+    # ADALINEモデルを学習
+    model = ADALINE(X, y, alpha=0.01, n_iters=1000)
     acc = model.fit(get_accuracy=True)
     print(f"Accuracy: {acc}")
     
