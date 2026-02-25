@@ -113,7 +113,7 @@ class Perceptron:
         y = slope * x + intercept
     
         # 決定境界近似曲線をプロット、境界で色分け
-        plt.plot(x, y, color='black', linestyle='-', label=f'決定境界近似直線: y = {slope:.2f}x + {intercept:.2f}')
+        plt.plot(x, y, color='black', linestyle='-', label=f'決定境界近似')
         plt.fill_between(x, y, y_min-1, color='blue', alpha=0.2, label='Class 0 領域')
         plt.fill_between(x, y, y_max+1, color='red' , alpha=0.2, label='Class 1 領域')
         
@@ -124,13 +124,13 @@ class Perceptron:
         cls0_error   = self.X_[np.logical_and(self.predict(self.X_) == 0, self.y_ == 1)]
         plt.scatter(cls0_collect[:, 0], cls0_collect[:, 1], c='blue', edgecolors='k', marker='o', label='Class 0 (Predicted True)')
         plt.scatter(cls1_collect[:, 0], cls1_collect[:, 1], c='red' , edgecolors='k', marker='s', label='Class 1 (Predicted True)')
-        plt.scatter(cls1_error[:, 0]  , cls1_error[:, 1]  , c='red' , edgecolors='k', marker='o', label='Class 0 (Predicted False)')
-        plt.scatter(cls0_error[:, 0]  , cls0_error[:, 1]  , c='blue', edgecolors='k', marker='s', label='Class 1 (Predicted False)')
+        plt.scatter(cls1_error[:, 0]  , cls1_error[:, 1]  , c='cyan' , edgecolors='k', marker='o', label='Class 0 (Predicted False)')
+        plt.scatter(cls0_error[:, 0]  , cls0_error[:, 1]  , c='orange', edgecolors='k', marker='s', label='Class 1 (Predicted False)')
                 
         # 軸ラベル、タイトル、凡例の設定
         plt.xlabel(xlabel='sepal length (cm)', fontdict={'family':'MS Gothic'})
         plt.ylabel(ylabel='petal length (cm)', fontdict={'family':'MS Gothic'})
-        plt.title(label='決定領域と予測結果' , fontdict={'family':'MS Gothic'})
+        plt.title(label='パーセプトロンの決定領域と予測結果' , fontdict={'family':'MS Gothic'})
         plt.legend(prop={'family':'MS Gothic', 'size':7}, loc='lower right', )
         
         plt.show()

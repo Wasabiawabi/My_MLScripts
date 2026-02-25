@@ -144,13 +144,13 @@ class ADALINE:
         cls0_error   = self.X_[np.logical_and(self.predict(self.X_) == 0, self.y_ == 1)]
         plt.scatter(cls0_collect[:, 0], cls0_collect[:, 1], c='blue', edgecolors='k', marker='o', label='Class 0 (予測成功)')
         plt.scatter(cls1_collect[:, 0], cls1_collect[:, 1], c='red' , edgecolors='k', marker='s', label='Class 1 (予測成功)')
-        plt.scatter(cls1_error[:, 0]  , cls1_error[:, 1]  , c='red' , edgecolors='k', marker='o', label='Class 0 (予測失敗)')
-        plt.scatter(cls0_error[:, 0]  , cls0_error[:, 1]  , c='blue', edgecolors='k', marker='s', label='Class 1 (予測失敗)')
+        plt.scatter(cls1_error[:, 0]  , cls1_error[:, 1]  , c='cyan' , edgecolors='k', marker='o', label='Class 0 (予測失敗)')
+        plt.scatter(cls0_error[:, 0]  , cls0_error[:, 1]  , c='orange', edgecolors='k', marker='s', label='Class 1 (予測失敗)')
                 
         # 軸ラベル、タイトル、凡例の設定
         plt.xlabel(xlabel='sepal length (cm)', fontdict={'family':'MS Gothic'})
         plt.ylabel(ylabel='petal length (cm)', fontdict={'family':'MS Gothic'})
-        plt.title(label='決定領域と予測結果' , fontdict={'family':'MS Gothic'})
+        plt.title(label='ADALINEの決定領域と予測結果' , fontdict={'family':'MS Gothic'})
         plt.legend(prop={'family':'MS Gothic', 'size':7}, loc='lower right', )
         
         plt.show()
