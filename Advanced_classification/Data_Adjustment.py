@@ -1,7 +1,7 @@
 # -*- coding : utf-8 -*-
 import numpy as np
 
-def Standarize(X):
+def Standardization(X):
     """標準化
 
     Args:
@@ -10,7 +10,9 @@ def Standarize(X):
     Returns:
         X (ベクトル): 標準化後の入力データ
     """
-    return (X - np.mean(X)) / np.std(X)
+    for i in range(X.shape[1]):
+        X[:, i] = (X[:, i] - np.mean(X[:, i])) / np.std(X[:, i])
+    return X
 
 def L2Regularization(w, a):
     """L2正則化<br>
