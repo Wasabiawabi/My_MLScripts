@@ -9,7 +9,7 @@ def is_formula_line(line):
         return True
     return False
 
-notebook_path = r"c:\Users\suzuk\Documents\A-Workspace\ML-learn\My_MLScripts\Elementary_classification\Note.ipynb"
+notebook_path = r"c:\Users\suzuk\Documents\A-Workspace\ML-learn\My_MLScripts\Advanced_classification\Note.ipynb"
 with open(notebook_path, 'r', encoding='utf-8') as f:
     nb = json.load(f)
 changed = False
