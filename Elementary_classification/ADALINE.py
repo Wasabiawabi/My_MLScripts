@@ -186,3 +186,5 @@ if __name__ == "__main__":
     
     # 決定境界のプロット
     model.plot_dicision_boundary(resolution=0.01)
+    
+    print(model.weights_)
